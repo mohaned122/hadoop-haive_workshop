@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyc
+*.pyo
+*.pyd
+
+# Logs/temp
+*.log
+.DS_Store
+Thumbs.db
+list.err.txt
+list.out.txt
+null
+
+# Answer-containing / sensitive (do not commit)
+answers.enc
+index.html
+quiz_questions.txt
+HADOOP_QUIZ.md
+quiz_questions.json
