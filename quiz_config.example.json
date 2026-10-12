@@ -1,0 +1,13 @@
+{
+  "time_limit": 15.0,
+  "base_points": 10.0,
+  "max_speed_bonus": 5.0,
+  "shuffle": true,
+  "seed": null,
+  "rating_thresholds": {
+    "Excellent": 90,
+    "Good": 75,
+    "Fair": 60,
+    "Needs practice": 0
+  }
+}

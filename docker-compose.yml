@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  hadoop-master:
+    image: apache/hadoop:3.5.0
+    container_name: hadoop-master
+    hostname: hadoop-master
+    
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    ports:
+      # HDFS
+      - "9000:9000"      # NameNode IPC
+      - "9870:9870"      # NameNode Web UI
+      - "50470:50470"    # NameNode HTTPS
+      
+      # YARN
+      - "8030:8030"      # ResourceManager scheduler
+      - "8031:8031"      # ResourceManager resource-tracker
+      - "8032:8032"      # ResourceManager
+      - "8033:8033"      # ResourceManager admin
+      - "8088:8088"      # ResourceManager Web UI
+      
+      # Secondary NameNode
+      - "9101:9101"      # Secondary NameNode HTTP
+      
+      # Job History
+      - "19888:19888"    # Job History Web UI
+      
+      # SSH
+      - "22:22"          # SSH
+    
+    environment:
+      JAVA_HOME: /usr/local/openjdk-11
+      HADOOP_HOME: /opt/hadoop
+      HDFS_NAMENODE_USER: hadoop
+      HDFS_DATANODE_USER: hadoop
+      HDFS_SECONDARYNAMENODE_USER: hadoop
+      YARN_RESOURCEMANAGER_USER: hadoop
+      YARN_NODEMANAGER_USER: hadoop
+    
+    volumes:
+      # Persist HDFS data
+      - hadoop_namenode_data:/opt/hadoop/data/namenode
+      - hadoop_datanode_data:/opt/hadoop/data/datanode
+      
+      # Persist logs
+      - hadoop_logs:/opt/hadoop/logs
+    
+    networks:
+      - hadoop-network
+    
+    # Root so sshd can bind/privsep; Hadoop daemons auto-drop to 'hadoop' via HDFS_*_USER / YARN_*_USER env
+    user: root
+
+    command:
+      - bash
+      - -c
+      - |
+        service ssh start
+        export PATH=/opt/hadoop/sbin:$$PATH
+        if [ ! -f /opt/hadoop/data/namenode/current/VERSION ]; then
+          echo 'Formatting NameNode...'
+          echo 'Y' | hdfs namenode -format 2>&1 | grep -E '(Formatting|SHUTDOWN)' || true
+        else
+          echo 'NameNode already formatted - skipping'
+        fi
+        chown -R hadoop:hadoop /opt/hadoop/data /opt/hadoop/tmp /opt/hadoop/logs 2>/dev/null || true
+        echo 'Starting HDFS...'
+        start-dfs.sh
+        sleep 5
+        echo 'Starting YARN...'
+        start-yarn.sh
+        echo 'Starting JobHistory server...'
+        mr-jobhistory-daemon.sh start historyserver 2>/dev/null || true
+        sleep 3
+        jps
+        echo '---'
+        echo 'NameNode Web UI: http://localhost:9870'
+        echo 'ResourceManager Web UI: http://localhost:8088'
+        echo 'JobHistory Web UI: http://localhost:19888'
+        echo 'SSH: ssh -p 22 hadoop@localhost'
+        echo '---'
+        tail -f /dev/null
+    
+    # Keep container running
+    stdin_open: true
+    tty: true
+
+networks:
+  hadoop-network:
+    driver: bridge
+
+volumes:
+  hadoop_namenode_data:
+  hadoop_datanode_data:
+  hadoop_logs:

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hadoop/Hive Workshop Quiz</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --sub: #94a3b8;
+      --btn: #334155;
+      --btn-hover: #475569;
+      --correct: #16a34a;
+      --wrong: #dc2626;
+      --accent: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(18px, 4vw, 28px);
+    }
+
+    .sub {
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: clamp(12px, 2vw, 20px);
+      box-shadow: 0 10px 40px -20px rgba(56, 189, 248, .3);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      background: #0b1220;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .qtext {
+      font-size: clamp(15px, 2.5vw, 19px);
+      margin: 8px 0 16px;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width:680px) {
+      .choices {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .choice {
+      text-align: left;
+      background: var(--btn);
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: clamp(13px, 2.2vw, 15px);
+      cursor: pointer;
+    }
+
+    .choice:hover:not(.disabled) {
+      background: var(--btn-hover);
+    }
+
+    .choice.correct {
+      background: linear-gradient(90deg, rgba(22, 163, 74, .3), transparent);
+      border-color: rgba(22, 163, 74, .8);
+    }
+
+    .choice.wrong {
+      background: linear-gradient(90deg, rgba(220, 38, 38, .25), transparent);
+      border-color: rgba(220, 38, 38, .8);
+    }
+
+    .choice.disabled {
+      cursor: not-allowed;
+      opacity: .9;
+    }
+
+    .foot {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #0b1020;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #475569;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      border: 1px solid #334155;
+      padding: 8px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #0b1220;
+      color: var(--sub);
+    }
+
+    .recap-q {
+      max-width: 420px;
+      word-break: break-word;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Hadoop/Hive Workshop Quiz</h1>
+      <div class="sub">Single-file, minimal bandwidth. Reads embedded questions, times each answer, scores with speed
+        bonus.</div>
+    </header>
+
+    <section id="setup" class="card">
+      <div class="row">
+        <div>
+          <strong>Setup</strong>
+          <div class="sub">All questions are embedded in this HTML file. Defaults mirror your Python app.</div>
+        </div>
+        <div class="pill mono" id="qcount">Questions: —</div>
+      </div>
+      <div class="row" style="align-items:flex-end">
+        <label class="sub">Time limit (s)
+          <input id="timeLimit" type="number" min="5" step="1" value="15"
+            style="display:block;background:#0b1220;border:1px solid #334155;border-radius:8px;padding:6px 8px;margin-top:4px;width:110px">
+        </label>
+        <label class="sub">Base points
+          <input id="basePts" type="number" min="0" step="1" value="10"
+            style="display:block;background:#0b1220;border:1px solid #334155;border-radius:8px;padding:6px 8px;margin-top:4px;width:110px">
+        </label>
+        <label class="sub">Max speed bonus
+          <input id="bonusPts" type="number" min="0" step="1" value="5"
+            style="display:block;background:#0b1220;border:1px solid #334155;border-radius:8px;padding:6px 8px;margin-top:4px;width:110px">
+        </label>
+        <label class="sub">Seed (optional)
+          <input id="seed" type="text" placeholder="e.g. 42"
+            style="display:block;background:#0b1220;border:1px solid #334155;border-radius:8px;padding:6px 8px;margin-top:4px;width:140px">
+        </label>
+        <label class="sub" style="display:flex;gap:6px;align-items:center;margin-top:18px">
+          <input id="shuffle" type="checkbox" checked> Shuffle
+        </label>
+      </div>
+      <div class="actions">
+        <button id="start">Start Quiz</button>
+        <button id="restartSetup" class="ghost hide">Back to setup</button>
+      </div>
+    </section>
+
+    <section id="quiz" class="card hide" aria-live="polite">
+      <div class="row">
+        <div class="pill">Question <span id="qnum">1</span> / <span id="qtotal">—</span></div>
+        <div class="pill">Time: <span id="timer">0.00</span>s / <span id="tlim">15</span>s</div>
+        <div class="pill">Score: <span id="score">0</span></div>
+      </div>
+      <div class="qtext" id="qtext">Question text</div>
+      <div class="choices" id="choices"></div>
+      <div class="foot">
+        <div>Answer with A–D or click a choice. Timeout counts as 0.</div>
+        <div class="sub">Speed bonus = max*(1 - seconds/limit), clamped 0–1</div>
+      </div>
+    </section>
+
+    <section id="results" class="card hide">
+      <div class="row">
+        <div>
+          <strong>Results</strong>
+          <div class="sub">Recap of your answers</div>
+        </div>
+        <div class="pill">Rating: <span id="rating">—</span></div>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <div class="pill">Score: <span id="rScore">0</span> / <span id="rMax">0</span> (<span id="rPct">0</span>%)</div>
+        <div class="pill">Correct: <span id="rCorrect">0</span> | Wrong: <span id="rWrong">0</span> | Timeouts: <span
+            id="rTO">0</span></div>
+        <div class="pill">Accuracy: <span id="rAcc">0</span>%</div>
+        <div class="pill">Total: <span id="rDur">0.0</span>s | Avg: <span id="rAvg">0.00</span>s/q</div>
+      </div>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Your answer</th>
+              <th>Correct</th>
+              <th>Time (s)</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button id="retry">Retry with same settings</button>
+        <button id="newQuiz" class="ghost">New quiz</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const QUESTIONS = [{"q": "Quelle est la principale diff\u00e9rence entre le Compiler et l'Execution Engine ?", "choices": ["Le Compiler stocke les donn\u00e9es et l'Execution Engine les m\u00e9tadonn\u00e9es", "Le Compiler pr\u00e9pare le plan d'ex\u00e9cution, tandis que l'Execution Engine l'ex\u00e9cute", "Le Compiler g\u00e8re les sessions et l'Execution Engine les connexions", "Le Compiler g\u00e8re HDFS et l'Execution Engine remplace Hadoop"], "answer": -1}, {"q": "This cluster sets `fs.defaultFS`. What is its exact value?", "choices": ["`hdfs://localhost:9870`", "`file:///`", "`hdfs://localhost:9000`", "`hdfs://hadoop-master:8020`"], "answer": -1}, {"q": "Pourquoi Hive est-il adapt\u00e9 au Big Data ?", "choices": ["Il traite uniquement de petites bases de donn\u00e9es", "Il exige que toutes les donn\u00e9es soient en m\u00e9moire", "Il fonctionne uniquement sur un ordinateur", "Il exploite l'infrastructure distribu\u00e9e de Hadoop"], "answer": -1}, {"q": "Which daemon is directly responsible for launching the containers (processes) that run map/reduce tasks locally and reporting their status back?", "choices": ["ResourceManager", "DataNode", "NodeManager", "SecondaryNameNode"], "answer": -1}, {"q": "Quel composant de Hive stocke les m\u00e9tadonn\u00e9es des tables (sch\u00e9mas, localisations) ?", "choices": ["Le Compiler", "Le Metastore", "L'Execution Engine", "Le JobTracker"], "answer": -1}, {"q": "For MapReduce jobs, YARN's NodeManager runs the `mapreduce_shuffle` auxiliary service. Which class is the correct implementation of the shuffle handler?", "choices": ["`org.apache.hadoop.hive.ql.exec.mr.ExecDriver`", "`org.apache.hadoop.mapreduce.v2.app.MRAppMaster`", "`org.apache.hadoop.mapred.ShuffleHandler`", "`org.apache.hadoop.yarn.server.nodemanager.NodeManager`"], "answer": -1}, {"q": "Quelle s\u00e9quence repr\u00e9sente correctement le d\u00e9but du traitement d'une requ\u00eate Hive ?", "choices": ["Metastore -> HDFS -> Driver -> Compiler", "Compiler -> Driver -> Metastore -> Execution Engine", "Driver -> Compiler -> r\u00e9cup\u00e9ration des m\u00e9tadonn\u00e9es aupr\u00e8s du Metastore", "HDFS -> Execution Engine -> Compiler -> Driver"], "answer": -1}, {"q": "Which daemon is the single holder of the HDFS namespace (directories, filenames, permissions, block mappings)?", "choices": ["DataNode", "NameNode", "NodeManager", "JobHistoryServer"], "answer": -1}, {"q": "Pourquoi Hive n'est-il pas adapt\u00e9 aux transactions en temps r\u00e9el ?", "choices": ["Il ne peut pas traiter de grandes quantit\u00e9s de donn\u00e9es", "Il ne prend pas en charge HiveQL", "Il est principalement con\u00e7u pour le traitement analytique par lots", "Il fonctionne uniquement en m\u00e9moire"], "answer": -1}, {"q": "This cluster is started with compose `user: root`, yet the six Hadoop daemons do NOT run as root. Why, and who actually owns them?", "choices": ["The daemons run as root, and root rights in the container allow Hadoop to be faster", "`sshd` needs root to bind port 22 / set gid 0, while `start-dfs.sh` / `start-yarn.sh` drop each daemon to the `hadoop` user via the `HDFS_*_USER` / `YARN_*_USER` environment variables", "The daemons run as a dedicated `datanode` POSIX user created by Hadoop", "The container runs as root but every process, including sshd, is forced to the `hadoop` user"], "answer": -1}, {"q": "Comment les lignes sont-elles r\u00e9parties dans les buckets ?", "choices": ["Selon leur ordre d'insertion", "De mani\u00e8re totalement al\u00e9atoire", "Selon la taille des lignes", "\u00c0 l'aide d'une fonction de hachage appliqu\u00e9e \u00e0 la colonne de clustering"], "answer": -1}, {"q": "What HDFS replication factor is configured in this single-node workshop (`hdfs-site.xml`)?", "choices": ["1", "2", "3", "4"], "answer": -1}, {"q": "Quelle situation correspond le mieux \u00e0 un usage de Hive ?", "choices": ["La gestion de transactions bancaires en temps r\u00e9el", "Le d\u00e9veloppement d'un jeu vid\u00e9o interactif", "La gestion de sessions web \u00e0 tr\u00e8s faible latence", "L'analyse de grands volumes de donn\u00e9es historiques pour produire des rapports"], "answer": -1}, {"q": "In this workshop the NameNode web UI is on port 9870 instead of the classic 50070. Why?", "choices": ["50070 was already used by the ResourceManager", "Windows permanently reserves TCP range 50061-50160, so the host can never bind 50070", "50070 is the HTTPS port and cannot be served by the NameNode", "Because `dfs.namenode.http-address` defaults to 9870 and the workshop never overrides it"], "answer": -1}, {"q": "Dans quel syst\u00e8me sont physiquement stock\u00e9es les donn\u00e9es trait\u00e9es par Hive ?", "choices": ["Le Metastore", "La m\u00e9moire du Driver", "Une base de donn\u00e9es relationnelle uniquement", "HDFS"], "answer": -1}, {"q": "For a single MapReduce job, which YARN component negotiates container resources from the cluster and drives the map/reduce phase transitions?", "choices": ["ResourceManager", "The job's ApplicationMaster", "NodeManager", "NameNode"], "answer": -1}, {"q": "Pourquoi le partitionnement peut-il am\u00e9liorer les performances d'une requ\u00eate Hive ?", "choices": ["Il duplique les donn\u00e9es dans chaque partition", "Il supprime automatiquement les lignes inutiles", "Il transforme les requ\u00eates en transactions temps r\u00e9el", "Il permet de lire uniquement les partitions pertinentes"], "answer": -1}, {"q": "In `docker-compose.yml`, the startup command contains `export PATH=/opt/hadoop/sbin:$$PATH`. Why is the doubled `$$` needed?", "choices": ["Docker Compose would otherwise interpolate `$PATH` with the host (Windows) PATH, whose parentheses break the shell - `$$` passes a literal `$PATH` into the container", "Because bash requires `$$` to reference the PID and then append `PATH`", "YAML escapes a dollar sign only when doubled, or the syntax error `(` appears", "It is a typo that has no effect at runtime"], "answer": -1}, {"q": "Dans la commande `CLUSTERED BY (user_id) INTO 4 BUCKETS`, que choisit l'utilisateur ?", "choices": ["Cr\u00e9er quatre partitions selon la date", "Trier les lignes par `user_id`", "R\u00e9partir les lignes en quatre buckets selon `user_id`", "Cr\u00e9er quatre tables ind\u00e9pendantes"], "answer": -1}, {"q": "Which one of these Java daemons is NOT part of the HDFS component?", "choices": ["NameNode", "DataNode", "ResourceManager", "SecondaryNameNode"], "answer": -1}, {"q": "Pourquoi le Compiler communique-t-il avec le Metastore ?", "choices": ["Pour envoyer les r\u00e9sultats \u00e0 l'utilisateur", "Pour g\u00e9rer les connexions r\u00e9seau", "Pour r\u00e9cup\u00e9rer les m\u00e9tadonn\u00e9es n\u00e9cessaires \u00e0 la pr\u00e9paration du plan d'ex\u00e9cution", "Pour stocker les donn\u00e9es en m\u00e9moire vive"], "answer": -1}, {"q": "Which port exposes the ResourceManager web dashboard (YARN cluster page)?", "choices": ["9870", "8088", "19888", "9101"], "answer": -1}, {"q": "Dans l'architecture Hadoop MapReduce, quel est le r\u00f4le du JobTracker ?", "choices": ["Stocker les m\u00e9tadonn\u00e9es", "Planifier et suivre les t\u00e2ches MapReduce", "Analyser les requ\u00eates HiveQL", "Stocker les fichiers de donn\u00e9es"], "answer": -1}, {"q": "What is the real role of the Secondary NameNode?", "choices": ["A hot standby that takes over immediately if the NameNode crashes", "A read-only replica that balances read load", "It periodically checkpoints the NameNode: it fetches and merges the edit log into a new `fsimage`", "It stores a duplicate copy of every HDFS block"], "answer": -1}, {"q": "Quelle est une limite de Hive ?", "choices": ["Il ne prend pas en charge les donn\u00e9es distribu\u00e9es", "Il ne permet pas les requ\u00eates de type SQL", "Il n'est g\u00e9n\u00e9ralement pas adapt\u00e9 aux requ\u00eates \u00e0 tr\u00e8s faible latence", "Il fonctionne uniquement avec de petits fichiers texte"], "answer": -1}, {"q": "Hadoop 3.x (as used here) splits files into blocks. What is the default block size?", "choices": ["64 MB", "128 MB", "256 MB", "512 MB"], "answer": -1}, {"q": "Quel avantage de Hive permet de l'adapter \u00e0 des besoins de traitement sp\u00e9cifiques ?", "choices": ["L'utilisation exclusive de fonctions pr\u00e9d\u00e9finies", "L'impossibilit\u00e9 d'ajouter des fonctions", "L'ex\u00e9cution sur un seul ordinateur", "La possibilit\u00e9 de cr\u00e9er des fonctions personnalis\u00e9es (UDF)"], "answer": -1}, {"q": "After a successful `wordcount` run writing to `/user/hadoop/output`, where do you read the aggregated results?", "choices": ["In `/user/hadoop/output/_SUCCESS`", "Directly from the map tasks' stdout in `userlogs`", "In the file `/user/hadoop/output/part-r-00000`", "There is no persistent output; results only appear in the console"], "answer": -1}, {"q": "Quelle est la principale diff\u00e9rence entre Hadoop et Hive ?", "choices": ["Hadoop est un langage SQL et Hive un syst\u00e8me de fichiers", "Hadoop est un framework de stockage et de traitement distribu\u00e9, tandis que Hive est un outil d'analyse de donn\u00e9es", "Hadoop stocke uniquement les m\u00e9tadonn\u00e9es", "Hadoop et Hive sont le m\u00eame outil"], "answer": -1}, {"q": "A container's `stderr` shows `Error: Could not find or load main class org.apache.hadoop.mapreduce.v2.app.MRAppMaster`. Which configuration setting fixes this in this workshop?", "choices": ["Increase `yarn.nodemanager.resource.memory-mb`", "Set `mapreduce.application.classpath` to the explicit `/opt/hadoop/share/hadoop/{mapreduce,common,yarn,hdfs}/* + lib/*` paths", "Enable `dfs.nodemanager`-address", "Format the NameNode again"], "answer": -1}, {"q": "Quel composant de Hive re\u00e7oit les requ\u00eates HiveQL et g\u00e8re les sessions ?", "choices": ["Le Metastore", "Le Compiler", "Le Driver", "HDFS"], "answer": -1}];
+
+    const ENC="M0ZdVVtWSERdVVtWSEZdVVtWSEVdVVhWSEVdVVhWSERdVVlWSERdVVhWSERdVVhWSERdVVlWSEVdVVtWSEVdVVhWSEZdVVtWSEVdVVhWSERdVVtWSEZdVVhWSEUs";
+function xorDec(b64){const key=new TextEncoder().encode("hwquiz");const bin=atob(b64);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i)^key[i%key.length];return new TextDecoder().decode(out);}
+let ANSWERS=JSON.parse(xorDec(ENC));
+    function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
+    const $=(id)=>document.getElementById(id), letters=['A','B','C','D'];
+    const setup=$('setup'), quizSec=$('quiz'), results=$('results');
+    let pool=[], idx=0, qlist=[], timer=0, tick=null, startAt=0, totalScore=0, records=[], tlim=15, base=10, bonus=5;
+
+    $('qcount').textContent='Questions: '+QUESTIONS.length;
+    function shuffle(a, rng){for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()* (i+1));[a[i],a[j]]=[a[j],a[i]]} return a}
+    function rate(p){if(p>=90)return 'Excellent'; if(p>=75)return 'Good'; if(p>=60)return 'Fair'; return 'Needs practice'}
+
+    $('start').onclick=function(){
+      tlim=parseFloat($('timeLimit').value)||15; base=parseFloat($('basePts').value)||10; bonus=parseFloat($('bonusPts').value)||5;
+      const seedStr=$('seed').value.trim(); let rng=Math.random; if(seedStr){const s=parseInt(seedStr); if(!isNaN(s)) rng=mulberry32(s)}
+      pool=QUESTIONS.slice(); if($('shuffle').checked) shuffle(pool,rng);
+      qlist=pool.map((x,i)=>Object.assign({},x,{answer:ANSWERS[i]})); idx=0; totalScore=0; records=[]; clearInterval(tick);
+      $('tlim').textContent=tlim.toFixed(0);
+      $('score').textContent='0'; $('qtotal').textContent=qlist.length;
+      setup.classList.add('hide'); results.classList.add('hide'); quizSec.classList.remove('hide');
+      showQ();
+    }
+    function showQ(){
+      if(idx>=qlist.length){finish(); return}
+      const q=qlist[idx];
+      $('qnum').textContent=idx+1; $('qtext').textContent=q.q;
+      const ch=$('choices'); ch.innerHTML='';
+      q.choices.forEach((c,i)=>{
+        const b=document.createElement('button'); b.className='choice'; b.dataset.i=i; b.innerHTML='<span class="mono">'+letters[i]+'.</span> '+escapeHtml(c);
+        b.onclick=()=>answer(i); ch.appendChild(b);
+      });
+      timer=0; startAt=performance.now(); clearInterval(tick);
+      tick=setInterval(()=>{timer=(performance.now()-startAt)/1000; $('timer').textContent=timer.toFixed(2)}, 50);
+    }
+    function escapeHtml(s){const d=document.createElement('div'); d.textContent=s; return d.innerHTML}
+    function answer(i){
+      clearInterval(tick); const q=qlist[idx]; const secs=Math.min(timer,tlim);
+      const correct=i===q.answer;
+      let pts=0; if(correct){const frac=Math.max(0,Math.min(1,1-secs/tlim)); pts=Math.round((base+bonus*frac)*100)/100}
+      totalScore+=pts; $('score').textContent=totalScore.toFixed(2);
+      records.push({q, your:i, secs:secs.toFixed(2), pts});
+      const chs=$('choices').querySelectorAll('.choice');
+      chs.forEach((b,j)=>{b.classList.add('disabled'); if(j===q.answer)b.classList.add('correct'); if(i===j && !correct)b.classList.add('wrong')});
+      setTimeout(()=>{idx++; showQ()}, 650);
+    }
+    function finish(){
+      clearInterval(tick); quizSec.classList.add('hide'); results.classList.remove('hide');
+      const max=qlist.length*(base+bonus);
+      let ok=0,to=0,wr=0,sumt=0;
+      records.forEach(r=>{sumt+=parseFloat(r.secs); if(r.your===undefined)to++; else if(r.your===r.q.answer)ok++; else wr++});
+      const pct=max? (totalScore/max*100):0, acc=qlist.length?(ok/qlist.length*100):0, avg=sumt/(records.length||1);
+      $('rScore').textContent=totalScore.toFixed(2); $('rMax').textContent=max.toFixed(2); $('rPct').textContent=pct.toFixed(1);
+      $('rCorrect').textContent=ok; $('rWrong').textContent=wr; $('rTO').textContent=to; $('rAcc').textContent=acc.toFixed(1);
+      $('rDur').textContent=sumt.toFixed(1); $('rAvg').textContent=avg.toFixed(2); $('rating').textContent=rate(pct);
+      const tb=$('tbody'); tb.innerHTML='';
+      records.forEach((r,n)=>{
+        const tr=document.createElement('tr');
+        const yours=r.your===undefined? '--' : letters[r.your]+'. '+r.q.choices[r.your];
+        const corr=letters[r.q.answer]+'. '+r.q.choices[r.q.answer];
+        tr.innerHTML='<td>'+ (n+1) +'</td><td class="recap-q">'+escapeHtml(r.q.q)+'</td><td>'+escapeHtml(yours)+'</td><td>'+escapeHtml(corr)+'</td><td>'+r.secs+'</td><td>'+r.pts.toFixed(2)+'</td>';
+        tb.appendChild(tr);
+      });
+      $('restartSetup').classList.remove('hide');
+    }
+    $('retry').onclick=function(){ idx=0; totalScore=0; records=[]; $('score').textContent='0'; results.classList.add('hide'); quizSec.classList.remove('hide'); showQ()}
+    $('newQuiz').onclick=function(){ results.classList.add('hide'); setup.classList.remove('hide'); $('restartSetup').classList.add('hide')}
+    $('restartSetup').onclick=function(){ results.classList.add('hide'); quizSec.classList.add('hide'); setup.classList.remove('hide')}
+    window.onload=function(){ $('qtotal').textContent=QUESTIONS.length }
+  </script>
+</body>
+
+</html>
