@@ -15,9 +15,10 @@ list.err.txt
 list.out.txt
 null
 
-# Answer-containing / sensitive (do not commit)
 answers.enc
-index.html
-quiz_questions.txt
+# index.html contains encrypted answers (safe to commit if we want web; but keep if you prefer) 
+# keeping index.html tracked per request; answers.enc kept tracked for runtime decrypt
+# quiz_questions.txt now included (contains question text only, markers stripped)
+# HADOOP_QUIZ.md excluded if present (has * markers) 
 HADOOP_QUIZ.md
 quiz_questions.json
