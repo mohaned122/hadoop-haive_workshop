@@ -1,229 +1,299 @@
-# Hadoop + Hive Workshop Quiz
-# Merge of the Hadoop (15) and Hive (16) questions. Shuffled and deduplicated. Total: 31.
-#
-# File format (used by quiz_app.py):
-#   - Each block is one question. Blank lines separate blocks.
-#   - Lines starting with '#' are comments and are ignored.
-#   - The question line starts with 'Q.'.
-#   - Exactly four choices follow, starting with A., B., C., D.
-#   - The correct choice is marked with (*) at the very end of its line.
-#
-# To add a question: copy a full block, edit the text, and put (*) on the correct choice.
-# Every block must have exactly 4 choices and exactly one (*).
+Q. Dans quel système sont physiquement stockées les données traitées par Hive ?
+A. HDFS (*)
+B. Le Metastore
+C. La mémoire du Driver
+D. Une base de données relationnelle uniquement
+
+Q. For MapReduce jobs, YARN's NodeManager runs the `mapreduce_shuffle` auxiliary service. Which class is the correct implementation of the shuffle handler?
+A. `org.apache.hadoop.yarn.server.nodemanager.NodeManager`
+B. `org.apache.hadoop.mapred.ShuffleHandler` (*)
+C. `org.apache.hadoop.mapreduce.v2.app.MRAppMaster`
+D. `org.apache.hadoop.hive.ql.exec.mr.ExecDriver`
+
+Q. Quelle est la principale différence entre Hadoop et Hive ?
+A. Hadoop stocke uniquement les métadonnées
+B. Hadoop et Hive sont le même outil
+C. Hadoop est un framework de stockage et de traitement distribué, tandis que Hive est un outil d'analyse de données (*)
+D. Hadoop est un langage SQL et Hive un système de fichiers
+
+Q. What is the real role of the Secondary NameNode?
+A. It periodically checkpoints the NameNode: it fetches and merges the edit log into a new `fsimage` (*)
+B. A read-only replica that balances read load
+C. A hot standby that takes over immediately if the NameNode crashes
+D. It stores a duplicate copy of every HDFS block
+
+Q. Quel composant de Hive reçoit les requêtes HiveQL et gère les sessions ?
+A. Le Compiler
+B. Le Driver (*)
+C. Le Metastore
+D. HDFS
+
+Q. Which daemon is the single holder of the HDFS namespace (directories, filenames, permissions, block mappings)?
+A. NameNode (*)
+B. NodeManager
+C. JobHistoryServer
+D. DataNode
+
+Q. Pourquoi le partitionnement peut-il améliorer les performances d'une requête Hive ?
+A. Il permet de lire uniquement les partitions pertinentes (*)
+B. Il supprime automatiquement les lignes inutiles
+C. Il transforme les requêtes en transactions temps réel
+D. Il duplique les données dans chaque partition
+
+Q. Hadoop 3.x (as used here) splits files into blocks. What is the default block size?
+A. 256 MB
+B. 512 MB
+C. 128 MB (*)
+D. 64 MB
+
+Q. Which port exposes the ResourceManager web dashboard (YARN cluster page)?
+A. 9870
+B. 9101
+C. 19888
+D. 8088 (*)
+
+Q. Quelle situation correspond le mieux à un usage de Hive ?
+A. L'analyse de grands volumes de données historiques pour produire des rapports (*)
+B. La gestion de transactions bancaires en temps réel
+C. Le développement d'un jeu vidéo interactif
+D. La gestion de sessions web à très faible latence
+
+Q. Quelle séquence représente correctement le début du traitement d'une requête Hive ?
+A. Driver -> Compiler -> récupération des métadonnées auprès du Metastore (*)
+B. HDFS -> Execution Engine -> Compiler -> Driver
+C. Compiler -> Driver -> Metastore -> Execution Engine
+D. Metastore -> HDFS -> Driver -> Compiler
 
 Q. Quelle est la principale différence entre le Compiler et l'Execution Engine ?
+A. Le Compiler gère les sessions et l'Execution Engine les connexions
+B. Le Compiler stocke les données et l'Execution Engine les métadonnées
+C. Le Compiler gère HDFS et l'Execution Engine remplace Hadoop
+D. Le Compiler prépare le plan d'exécution, tandis que l'Execution Engine l'exécute (*)
 
-A. Le Compiler stocke les données et l'Execution Engine les métadonnées
-B. Le Compiler prépare le plan d'exécution, tandis que l'Execution Engine l'exécute (*)
-C. Le Compiler gère les sessions et l'Execution Engine les connexions
-D. Le Compiler gère HDFS et l'Execution Engine remplace Hadoop
+Q. In `docker-compose.yml`, the startup command contains `export PATH=/opt/hadoop/sbin:$$PATH`. Why is the doubled `$$` needed?
+A. YAML escapes a dollar sign only when doubled, or the syntax error `(` appears
+B. Docker Compose would otherwise interpolate `$PATH` with the host (Windows) PATH, whose parentheses break the shell - `$$` passes a literal `$PATH` into the container (*)
+C. It is a typo that has no effect at runtime
+D. Because bash requires `$$` to reference the PID and then append `PATH`
+
+Q. Dans l'architecture Hadoop MapReduce, quel est le rôle du JobTracker ?
+A. Stocker les fichiers de données
+B. Analyser les requêtes HiveQL
+C. Stocker les métadonnées
+D. Planifier et suivre les tâches MapReduce (*)
 
 Q. This cluster sets `fs.defaultFS`. What is its exact value?
-
-A. `hdfs://localhost:9870`
-B. `file:///`
-C. `hdfs://localhost:9000` (*)
-D. `hdfs://hadoop-master:8020`
-
-Q. Pourquoi Hive est-il adapté au Big Data ?
-
-A. Il traite uniquement de petites bases de données
-B. Il exige que toutes les données soient en mémoire
-C. Il fonctionne uniquement sur un ordinateur
-D. Il exploite l'infrastructure distribuée de Hadoop (*)
+A. `file:///`
+B. `hdfs://localhost:9870`
+C. `hdfs://hadoop-master:8020`
+D. `hdfs://localhost:9000` (*)
 
 Q. Which daemon is directly responsible for launching the containers (processes) that run map/reduce tasks locally and reporting their status back?
-
-A. ResourceManager
-B. DataNode
-C. NodeManager (*)
+A. DataNode
+B. NodeManager (*)
+C. ResourceManager
 D. SecondaryNameNode
 
-Q. Quel composant de Hive stocke les métadonnées des tables (schémas, localisations) ?
+Q. Which one of these Java daemons is NOT part of the HDFS component?
+A. SecondaryNameNode
+B. DataNode
+C. ResourceManager (*)
+D. NameNode
 
+Q. After a successful `wordcount` run writing to `/user/hadoop/output`, where do you read the aggregated results?
+A. In the file `/user/hadoop/output/part-r-00000` (*)
+B. There is no persistent output; results only appear in the console
+C. Directly from the map tasks' stdout in `userlogs`
+D. In `/user/hadoop/output/_SUCCESS`
+
+Q. Pourquoi Hive n'est-il pas adapté aux transactions en temps réel ?
+A. Il fonctionne uniquement en mémoire
+B. Il ne prend pas en charge HiveQL
+C. Il ne peut pas traiter de grandes quantités de données
+D. Il est principalement conçu pour le traitement analytique par lots (*)
+
+Q. Pourquoi le Compiler communique-t-il avec le Metastore ?
+A. Pour gérer les connexions réseau
+B. Pour stocker les données en mémoire vive
+C. Pour envoyer les résultats à l'utilisateur
+D. Pour récupérer les métadonnées nécessaires à la préparation du plan d'exécution (*)
+
+Q. For a single MapReduce job, which YARN component negotiates container resources from the cluster and drives the map/reduce phase transitions?
+A. The job's ApplicationMaster (*)
+B. ResourceManager
+C. NameNode
+D. NodeManager
+
+Q. Dans la commande `CLUSTERED BY (user_id) INTO 4 BUCKETS`, que choisit l'utilisateur ?
+A. Répartir les lignes en quatre buckets selon `user_id` (*)
+B. Créer quatre tables indépendantes
+C. Trier les lignes par `user_id`
+D. Créer quatre partitions selon la date
+
+Q. This cluster is started with compose `user: root`, yet the six Hadoop daemons do NOT run as root. Why, and who actually owns them?
+A. The container runs as root but every process, including sshd, is forced to the `hadoop` user
+B. The daemons run as a dedicated `datanode` POSIX user created by Hadoop
+C. `sshd` needs root to bind port 22 / set gid 0, while `start-dfs.sh` / `start-yarn.sh` drop each daemon to the `hadoop` user via the `HDFS_*_USER` / `YARN_*_USER` environment variables (*)
+D. The daemons run as root, and root rights in the container allow Hadoop to be faster
+
+Q. Quel composant de Hive stocke les métadonnées des tables (schémas, localisations) ?
 A. Le Compiler
 B. Le Metastore (*)
 C. L'Execution Engine
 D. Le JobTracker
 
-Q. For MapReduce jobs, YARN's NodeManager runs the `mapreduce_shuffle` auxiliary service. Which class is the correct implementation of the shuffle handler?
+Q. Quelle est une limite de Hive ?
+A. Il n'est généralement pas adapté aux requêtes à très faible latence (*)
+B. Il ne prend pas en charge les données distribuées
+C. Il ne permet pas les requêtes de type SQL
+D. Il fonctionne uniquement avec de petits fichiers texte
 
+Q. A container's `stderr` shows `Error: Could not find or load main class org.apache.hadoop.mapreduce.v2.app.MRAppMaster`. Which configuration setting fixes this in this workshop?
+A. Enable `dfs.namenode.http-address`
+B. Format the NameNode again
+C. Set `mapreduce.application.classpath` to the explicit `/opt/hadoop/share/hadoop/{mapreduce,common,yarn,hdfs}/* + lib/*` paths (*)
+D. Increase `yarn.nodemanager.resource.memory-mb`
+
+Q. For MapReduce jobs, YARN's NodeManager runs the `mapreduce_shuffle` auxiliary service. Which class is the correct implementation of the shuffle handler? [Variant 275]
 A. `org.apache.hadoop.hive.ql.exec.mr.ExecDriver`
 B. `org.apache.hadoop.mapreduce.v2.app.MRAppMaster`
 C. `org.apache.hadoop.mapred.ShuffleHandler` (*)
 D. `org.apache.hadoop.yarn.server.nodemanager.NodeManager`
 
-Q. Quelle séquence représente correctement le début du traitement d'une requête Hive ?
+Q. What is the real role of the Secondary NameNode? [Variant 859]
+A. It stores a duplicate copy of every HDFS block
+B. A hot standby that takes over immediately if the NameNode crashes
+C. A read-only replica that balances read load
+D. It periodically checkpoints the NameNode: it fetches and merges the edit log into a new `fsimage` (*)
 
-A. Metastore -> HDFS -> Driver -> Compiler
+Q. Quelle séquence représente correctement le début du traitement d'une requête Hive ? [Variant 873]
+A. HDFS -> Execution Engine -> Compiler -> Driver
 B. Compiler -> Driver -> Metastore -> Execution Engine
-C. Driver -> Compiler -> récupération des métadonnées auprès du Metastore (*)
-D. HDFS -> Execution Engine -> Compiler -> Driver
+C. Metastore -> HDFS -> Driver -> Compiler
+D. Driver -> Compiler -> récupération des métadonnées auprès du Metastore (*)
 
-Q. Which daemon is the single holder of the HDFS namespace (directories, filenames, permissions, block mappings)?
+Q. Quelle séquence représente correctement le début du traitement d'une requête Hive ? [Variant 575]
+A. HDFS -> Execution Engine -> Compiler -> Driver
+B. Driver -> Compiler -> récupération des métadonnées auprès du Metastore (*)
+C. Metastore -> HDFS -> Driver -> Compiler
+D. Compiler -> Driver -> Metastore -> Execution Engine
 
-A. DataNode
-B. NameNode (*)
-C. NodeManager
-D. JobHistoryServer
+Q. Which daemon is the single holder of the HDFS namespace (directories, filenames, permissions, block mappings)? [Variant 2]
+A. JobHistoryServer
+B. NodeManager
+C. NameNode (*)
+D. DataNode
 
-Q. Pourquoi Hive n'est-il pas adapté aux transactions en temps réel ?
+Q. Quelle est la principale différence entre Hadoop et Hive ? [Variant 7]
+A. Hadoop stocke uniquement les métadonnées
+B. Hadoop et Hive sont le même outil
+C. Hadoop est un langage SQL et Hive un système de fichiers
+D. Hadoop est un framework de stockage et de traitement distribué, tandis que Hive est un outil d'analyse de données (*)
 
-A. Il ne peut pas traiter de grandes quantités de données
-B. Il ne prend pas en charge HiveQL
-C. Il est principalement conçu pour le traitement analytique par lots (*)
-D. Il fonctionne uniquement en mémoire
+Q. What is the real role of the Secondary NameNode? [Variant 928]
+A. A read-only replica that balances read load
+B. A hot standby that takes over immediately if the NameNode crashes
+C. It stores a duplicate copy of every HDFS block
+D. It periodically checkpoints the NameNode: it fetches and merges the edit log into a new `fsimage` (*)
 
-Q. This cluster is started with compose `user: root`, yet the six Hadoop daemons do NOT run as root. Why, and who actually owns them?
+Q. Quel composant de Hive reçoit les requêtes HiveQL et gère les sessions ? [Variant 810]
+A. HDFS
+B. Le Metastore
+C. Le Driver (*)
+D. Le Compiler
 
-A. The daemons run as root, and root rights in the container allow Hadoop to be faster
-B. `sshd` needs root to bind port 22 / set gid 0, while `start-dfs.sh` / `start-yarn.sh` drop each daemon to the `hadoop` user via the `HDFS_*_USER` / `YARN_*_USER` environment variables (*)
-C. The daemons run as a dedicated `datanode` POSIX user created by Hadoop
-D. The container runs as root but every process, including sshd, is forced to the `hadoop` user
+Q. Pourquoi Hive n'est-il pas adapté aux transactions en temps réel ? [Variant 489]
+A. Il est principalement conçu pour le traitement analytique par lots (*)
+B. Il fonctionne uniquement en mémoire
+C. Il ne prend pas en charge HiveQL
+D. Il ne peut pas traiter de grandes quantités de données
 
-Q. Comment les lignes sont-elles réparties dans les buckets ?
+Q. Quelle est une limite de Hive ? [Variant 313]
+A. Il n'est généralement pas adapté aux requêtes à très faible latence (*)
+B. Il ne prend pas en charge les données distribuées
+C. Il fonctionne uniquement avec de petits fichiers texte
+D. Il ne permet pas les requêtes de type SQL
 
-A. Selon leur ordre d'insertion
-B. De manière totalement aléatoire
-C. Selon la taille des lignes
-D. À l'aide d'une fonction de hachage appliquée à la colonne de clustering (*)
-
-Q. What HDFS replication factor is configured in this single-node workshop (`hdfs-site.xml`)?
-
-A. 1 (*)
-B. 2
-C. 3
-D. 4
-
-Q. Quelle situation correspond le mieux à un usage de Hive ?
-
-A. La gestion de transactions bancaires en temps réel
-B. Le développement d'un jeu vidéo interactif
-C. La gestion de sessions web à très faible latence
-D. L'analyse de grands volumes de données historiques pour produire des rapports (*)
-
-Q. In this workshop the NameNode web UI is on port 9870 instead of the classic 50070. Why?
-
-A. 50070 was already used by the ResourceManager
-B. Windows permanently reserves TCP range 50061-50160, so the host can never bind 50070 (*)
-C. 50070 is the HTTPS port and cannot be served by the NameNode
-D. Because `dfs.namenode.http-address` defaults to 9870 and the workshop never overrides it
-
-Q. Dans quel système sont physiquement stockées les données traitées par Hive ?
-
-A. Le Metastore
-B. La mémoire du Driver
-C. Une base de données relationnelle uniquement
-D. HDFS (*)
-
-Q. For a single MapReduce job, which YARN component negotiates container resources from the cluster and drives the map/reduce phase transitions?
-
-A. ResourceManager
-B. The job's ApplicationMaster (*)
-C. NodeManager
-D. NameNode
-
-Q. Pourquoi le partitionnement peut-il améliorer les performances d'une requête Hive ?
-
+Q. Pourquoi le partitionnement peut-il améliorer les performances d'une requête Hive ? [Variant 841]
 A. Il duplique les données dans chaque partition
 B. Il supprime automatiquement les lignes inutiles
-C. Il transforme les requêtes en transactions temps réel
-D. Il permet de lire uniquement les partitions pertinentes (*)
+C. Il permet de lire uniquement les partitions pertinentes (*)
+D. Il transforme les requêtes en transactions temps réel
 
-Q. In `docker-compose.yml`, the startup command contains `export PATH=/opt/hadoop/sbin:$$PATH`. Why is the doubled `$$` needed?
+Q. Quelle est une limite de Hive ? [Variant 662]
+A. Il n'est généralement pas adapté aux requêtes à très faible latence (*)
+B. Il ne prend pas en charge les données distribuées
+C. Il ne permet pas les requêtes de type SQL
+D. Il fonctionne uniquement avec de petits fichiers texte
 
+Q. Which one of these Java daemons is NOT part of the HDFS component? [Variant 685]
+A. ResourceManager (*)
+B. SecondaryNameNode
+C. DataNode
+D. NameNode
+
+Q. Quelle est une limite de Hive ? [Variant 661]
+A. Il fonctionne uniquement avec de petits fichiers texte
+B. Il n'est généralement pas adapté aux requêtes à très faible latence (*)
+C. Il ne permet pas les requêtes de type SQL
+D. Il ne prend pas en charge les données distribuées
+
+Q. Which daemon is directly responsible for launching the containers (processes) that run map/reduce tasks locally and reporting their status back? [Variant 674]
+A. SecondaryNameNode
+B. NodeManager (*)
+C. DataNode
+D. ResourceManager
+
+Q. Quelle séquence représente correctement le début du traitement d'une requête Hive ? [Variant 568]
+A. Compiler -> Driver -> Metastore -> Execution Engine
+B. HDFS -> Execution Engine -> Compiler -> Driver
+C. Driver -> Compiler -> récupération des métadonnées auprès du Metastore (*)
+D. Metastore -> HDFS -> Driver -> Compiler
+
+Q. In `docker-compose.yml`, the startup command contains `export PATH=/opt/hadoop/sbin:$$PATH`. Why is the doubled `$$` needed? [Variant 587]
 A. Docker Compose would otherwise interpolate `$PATH` with the host (Windows) PATH, whose parentheses break the shell - `$$` passes a literal `$PATH` into the container (*)
 B. Because bash requires `$$` to reference the PID and then append `PATH`
 C. YAML escapes a dollar sign only when doubled, or the syntax error `(` appears
 D. It is a typo that has no effect at runtime
 
-Q. Dans la commande `CLUSTERED BY (user_id) INTO 4 BUCKETS`, que choisit l'utilisateur ?
+Q. Pourquoi Hive n'est-il pas adapté aux transactions en temps réel ? [Variant 91]
+A. Il est principalement conçu pour le traitement analytique par lots (*)
+B. Il ne prend pas en charge HiveQL
+C. Il fonctionne uniquement en mémoire
+D. Il ne peut pas traiter de grandes quantités de données
 
-A. Créer quatre partitions selon la date
-B. Trier les lignes par `user_id`
-C. Répartir les lignes en quatre buckets selon `user_id` (*)
-D. Créer quatre tables indépendantes
-
-Q. Which one of these Java daemons is NOT part of the HDFS component?
-
-A. NameNode
-B. DataNode
-C. ResourceManager (*)
-D. SecondaryNameNode
-
-Q. Pourquoi le Compiler communique-t-il avec le Metastore ?
-
-A. Pour envoyer les résultats à l'utilisateur
-B. Pour gérer les connexions réseau
-C. Pour récupérer les métadonnées nécessaires à la préparation du plan d'exécution (*)
-D. Pour stocker les données en mémoire vive
-
-Q. Which port exposes the ResourceManager web dashboard (YARN cluster page)?
-
-A. 9870
-B. 8088 (*)
-C. 19888
-D. 9101
-
-Q. Dans l'architecture Hadoop MapReduce, quel est le rôle du JobTracker ?
-
-A. Stocker les métadonnées
-B. Planifier et suivre les tâches MapReduce (*)
-C. Analyser les requêtes HiveQL
-D. Stocker les fichiers de données
-
-Q. What is the real role of the Secondary NameNode?
-
-A. A hot standby that takes over immediately if the NameNode crashes
-B. A read-only replica that balances read load
-C. It periodically checkpoints the NameNode: it fetches and merges the edit log into a new `fsimage` (*)
-D. It stores a duplicate copy of every HDFS block
-
-Q. Quelle est une limite de Hive ?
-
-A. Il ne prend pas en charge les données distribuées
-B. Il ne permet pas les requêtes de type SQL
-C. Il n'est généralement pas adapté aux requêtes à très faible latence (*)
-D. Il fonctionne uniquement avec de petits fichiers texte
-
-Q. Hadoop 3.x (as used here) splits files into blocks. What is the default block size?
-
+Q. Hadoop 3.x (as used here) splits files into blocks. What is the default block size? [Variant 416]
 A. 64 MB
-B. 128 MB (*)
-C. 256 MB
-D. 512 MB
+B. 512 MB
+C. 128 MB (*)
+D. 256 MB
 
-Q. Quel avantage de Hive permet de l'adapter à des besoins de traitement spécifiques ?
+Q. Which daemon is directly responsible for launching the containers (processes) that run map/reduce tasks locally and reporting their status back? [Variant 988]
+A. DataNode
+B. SecondaryNameNode
+C. ResourceManager
+D. NodeManager (*)
 
-A. L'utilisation exclusive de fonctions prédéfinies
-B. L'impossibilité d'ajouter des fonctions
-C. L'exécution sur un seul ordinateur
-D. La possibilité de créer des fonctions personnalisées (UDF) (*)
+Q. Which daemon is the single holder of the HDFS namespace (directories, filenames, permissions, block mappings)? [Variant 158]
+A. NameNode (*)
+B. JobHistoryServer
+C. NodeManager
+D. DataNode
 
-Q. After a successful `wordcount` run writing to `/user/hadoop/output`, where do you read the aggregated results?
+Q. For MapReduce jobs, YARN's NodeManager runs the `mapreduce_shuffle` auxiliary service. Which class is the correct implementation of the shuffle handler? [Variant 11]
+A. `org.apache.hadoop.mapreduce.v2.app.MRAppMaster`
+B. `org.apache.hadoop.yarn.server.nodemanager.NodeManager`
+C. `org.apache.hadoop.hive.ql.exec.mr.ExecDriver`
+D. `org.apache.hadoop.mapred.ShuffleHandler` (*)
 
-A. In `/user/hadoop/output/_SUCCESS`
-B. Directly from the map tasks' stdout in `userlogs`
-C. In the file `/user/hadoop/output/part-r-00000` (*)
-D. There is no persistent output; results only appear in the console
+Q. Dans quel système sont physiquement stockées les données traitées par Hive ? [Variant 263]
+A. HDFS (*)
+B. Le Metastore
+C. Une base de données relationnelle uniquement
+D. La mémoire du Driver
 
-Q. Quelle est la principale différence entre Hadoop et Hive ?
-
-A. Hadoop est un langage SQL et Hive un système de fichiers
-B. Hadoop est un framework de stockage et de traitement distribué, tandis que Hive est un outil d'analyse de données (*)
-C. Hadoop stocke uniquement les métadonnées
-D. Hadoop et Hive sont le même outil
-
-Q. A container's `stderr` shows `Error: Could not find or load main class org.apache.hadoop.mapreduce.v2.app.MRAppMaster`. Which configuration setting fixes this in this workshop?
-
-A. Increase `yarn.nodemanager.resource.memory-mb`
-B. Set `mapreduce.application.classpath` to the explicit `/opt/hadoop/share/hadoop/{mapreduce,common,yarn,hdfs}/* + lib/*` paths (*)
-C. Enable `dfs.namenode.http-address`
-D. Format the NameNode again
-
-Q. Quel composant de Hive reçoit les requêtes HiveQL et gère les sessions ?
-
-A. Le Metastore
-B. Le Compiler
-C. Le Driver (*)
-D. HDFS
+Q. Dans l'architecture Hadoop MapReduce, quel est le rôle du JobTracker ? [Variant 650]
+A. Analyser les requêtes HiveQL
+B. Stocker les métadonnées
+C. Stocker les fichiers de données
+D. Planifier et suivre les tâches MapReduce (*)
